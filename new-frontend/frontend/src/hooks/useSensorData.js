@@ -1,29 +1,36 @@
-import { useState, useEffect } from 'react';
-import SensorData1 from '../data/sensorData1.json';
+import { useState, useEffect, useCallback } from 'react';
+import { getDatasetSeries } from '../services/apiClient';
 
-export const useSensorData = (useMock = true, endpoint = '/api/streams') => {
+export const useSensorData = (datasetName) => {
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  useEffect(() => {
-    if (useMock) {
-      setData(SensorData1);
+  const load = useCallback(async (signal) => {
+    if (!datasetName) {
+      setData([]);
+      setError(new Error('This dataset is not approved for the live dashboard.'));
       setLoading(false);
       return;
     }
 
-    fetch(endpoint)
-      .then((res) => res.json())
-      .then((json) => {
-        setData(json);
-        setLoading(false);
-      })
-      .catch((err) => {
-        setError(err);
-        setLoading(false);
-      });
-  }, [useMock, endpoint]);
+    setLoading(true);
+    setError(null);
+    try {
+      const json = await getDatasetSeries(datasetName, { signal });
+      setData(Array.isArray(json) ? json : []);
+    } catch (err) {
+      if (err.name !== 'AbortError') setError(err);
+    } finally {
+      if (!signal?.aborted) setLoading(false);
+    }
+  }, [datasetName]);
 
-  return { data, loading, error };
+  useEffect(() => {
+    const controller = new AbortController();
+    load(controller.signal);
+    return () => controller.abort();
+  }, [load]);
+
+  return { data, loading, error, refetch: () => load() };
 };

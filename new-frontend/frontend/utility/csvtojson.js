@@ -1,3 +1,4 @@
+/* global require */
 const csv = require('csvtojson');
 const fs = require('fs');
 

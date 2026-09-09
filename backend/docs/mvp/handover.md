@@ -117,10 +117,16 @@ AFIR-02 does not make those implementation changes.
 
 ### B-05 update – Dashboard live-data cutover
 
-Status: Open
+Status: Frontend implemented and locally verified
 
-The frontend currently uses `sensorData1.json` through `useSensorData(true)`, causing sensor routes to depend on the same mock source. Time filtering, interval sampling, statistics and correlation are also calculated in the browser.
+AFI-15 removed `sensorData1.json` from the demo path and introduced a shared live API client. Dashboard routes now resolve channel `12397` to `thingspeak-live` and channel `1350261` to `thingspeak-1350261` by default. Both dataset names can be overridden with Vite environment variables.
 
-The shared environment successfully returned 61 `thingspeak-live` rows, but frontend integration and per-sensor differentiation are not yet verified. Statistics, correlation and anomalies depend on BDAI-10, while alerts and alert history depend on BDAI-11.
+The dashboard now includes loading, no-data, invalid-range and API error states, responsive charts, readable timestamps, channel identity and unit hints. Login and registration use the approved backend `username` contract; Remember Me and cross-tab logout are implemented. Social login is disabled and MFA/reset are not presented as functional until AFI-14/AFI-16 provide approved routes.
+
+Remaining verification/blockers:
+
+- BDAI-10 remains the owner of backend statistics, correlation and anomaly routes.
+- BDAI-11 remains the owner of live alerts and alert-history routes.
+- AFI-14/AFI-16 must approve password-reset and MFA endpoints before those actions can be enabled.
 
 Exit evidence: Every sensor route must use an approved identifier, display distinct live data and remove supported mock dependencies.

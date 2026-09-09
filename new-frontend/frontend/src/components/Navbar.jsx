@@ -1,13 +1,13 @@
 import { Link, useNavigate } from "react-router-dom";
 import "./Navbar.css";
+import { clearAuthSession, logoutUser } from "../services/authClient";
 
 const Navbar = () => {
   const navigate = useNavigate();
 
-  const handleLogout = () => {
-    localStorage.removeItem("isAuthenticated");
-    sessionStorage.removeItem("iot_auth");
-
+  const handleLogout = async () => {
+    try { await logoutUser(); } catch { /* Clear expired/local sessions too. */ }
+    clearAuthSession();
     navigate("/");
   };
 

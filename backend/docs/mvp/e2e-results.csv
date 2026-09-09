@@ -1,0 +1,10 @@
+date,test,expected,result,evidence_or_blocker
+2026-08-09,Frontend production build,Vite build completes,PASS,npm run build
+2026-08-09,Frontend lint,No ESLint errors,PASS,npm run lint
+2026-08-09,Mock JSON removal,No sensor JSON imported,PASS,src/data/sensorData1.json removed
+2026-08-09,Channel 12397 route,Uses thingspeak-live series,PASS,Live dashboard and screenshot verified
+2026-08-09,Channel 1350261 route,Uses independent configured dataset,PASS,100 live rows imported and dashboard verified
+2026-08-09,Responsive chart and states,Mobile/loading/error/no-data/invalid-range supported,PASS,dashboard-proof.png
+2026-08-09,Auth contract,Login/register use username and backend tokens,PASS,Static contract and build verification
+2026-08-09,MFA/password reset,Only enabled when approved,BLOCKED,AFI-14/AFI-16 backend routes unavailable
+2026-08-09,Live anomalies and alerts,Approved live endpoints,BLOCKED,BDAI-10/BDAI-11

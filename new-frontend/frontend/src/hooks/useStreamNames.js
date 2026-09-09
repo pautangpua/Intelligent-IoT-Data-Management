@@ -7,7 +7,7 @@ export const useStreamNames = (data) => {
     if (!data || data.length === 0) return [];
 
     const keys = Object.keys(data[0]);
-    const streamKeys = keys.filter(k => k !== 'entry_id' && k !== 'created_at');
+    const streamKeys = keys.filter(k => k !== 'entry_id' && k !== 'created_at' && k !== 'dataset_id');
 
     return streamKeys.map(key => ({ id: key, name: key }));
   }, [data]);

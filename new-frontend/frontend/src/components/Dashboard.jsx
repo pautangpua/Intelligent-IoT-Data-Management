@@ -13,14 +13,14 @@ import MostCorrelatedPair from './MostCorrelatedPair.jsx';
 import ScatterPlot from './ScatterPlot.jsx';
 import { calculateCorrelation } from '../utils/correlationUtils.js';
 import TimeRangePanel from './TimeRangePanel.jsx';
+import { getLiveDataset } from '../config/datasets.js';
 
-const Dashboard = ({ datasetName }) => {
-  const { data, loading, error } = useSensorData(
-  false,
-  `/api/datasets/${encodeURIComponent(datasetName)}/series`
-);
+const Dashboard = ({ datasetId }) => {
+  const dataset = getLiveDataset(datasetId);
+  const { data, loading, error, refetch } = useSensorData(dataset?.datasetName);
+
   const streamNames = useStreamNames(data);
-  const { timeOptions, minTime, maxTime } = useTimeRange(data);
+  const { timeOptions } = useTimeRange(data);
 
   const [selectedTimeStart, setSelectedTimeStart] = useState('');
   const [selectedTimeEnd, setSelectedTimeEnd] = useState('');
@@ -107,6 +107,7 @@ const Dashboard = ({ datasetName }) => {
 
     if (timeMode === "relative") {
       // const now = Date.now();
+      if (!data.length) return;
       const now = new Date(data[data.length - 1].created_at).getTime();
 
 
@@ -125,11 +126,13 @@ const Dashboard = ({ datasetName }) => {
     }
 
     setShowTimePanel(false);
-  }, [timeMode, relativeRange, selectedTimeStart, selectedTimeEnd]);
+  }, [timeMode, relativeRange, selectedTimeStart, selectedTimeEnd, data]);
   // End of time range selection logic
 
   // Refresh button logic: re-apply the current time range selection
   const handleRefresh = () => {
+    refetch();
+    if (!data.length) return;
     if (timeMode === "relative") {
       const now = new Date(data[data.length - 1].created_at).getTime();
 
@@ -171,12 +174,33 @@ const Dashboard = ({ datasetName }) => {
 
 
 
-  if (loading) return <p>Loading dataset...</p>;
-  if (error) return <p>Error loading data</p>;
+  const invalidRange = Boolean(
+    finalStartTime && finalEndTime && finalStartTime > finalEndTime
+  );
+
+  if (!dataset) return <div className="dashboard-state error-state">Unknown live dataset.</div>;
+  if (loading) return <div className="dashboard-state" role="status">Loading live channel {datasetId}…</div>;
+  if (error) return (
+    <div className="dashboard-state error-state" role="alert">
+      <strong>Could not load channel {datasetId}.</strong>
+      <span>{error.message}</span>
+      <button type="button" onClick={refetch}>Try again</button>
+    </div>
+  );
+  if (!data.length) return (
+    <div className="dashboard-state" role="status">
+      No live readings are available for channel {datasetId} yet.
+      <button type="button" onClick={refetch}>Refresh</button>
+    </div>
+  );
 
   return (
     <div className="dashboard-page">
       <section className="dashboard-section info-panel">
+        <div className="live-dataset-heading">
+          <div><span className="live-badge">LIVE</span><h2>{dataset.name}</h2></div>
+          <span>Channel {dataset.channelId} · Dataset: {dataset.datasetName}</span>
+        </div>
         <h3 className="section-title">Dashboard Notes</h3>
         <ol className="note-list">
           <li>Select at least one stream to view the line chart.</li>
@@ -285,13 +309,23 @@ const Dashboard = ({ datasetName }) => {
       <section className="dashboard-section insights-panel">
         <h3 className="section-title">Insight Cards</h3>
 
-        {streamCount === 0 && (
+        {invalidRange && (
+          <div className="empty-state error-state" role="alert">
+            Invalid time range: the start must be earlier than the end.
+          </div>
+        )}
+
+        {!invalidRange && streamCount === 0 && (
           <div className="empty-state">
             Please select one or more streams to view summary insights and charts.
           </div>
         )}
 
-        {streamCount > 0 && (
+        {!invalidRange && streamCount > 0 && filteredData.length === 0 && (
+          <div className="empty-state">No readings match the selected time range and interval.</div>
+        )}
+
+        {!invalidRange && streamCount > 0 && filteredData.length > 0 && (
           <div className="stream-stats">
             {selectedStreams.map((stream) => (
               <StreamStats key={stream} data={filteredData} stream={stream} />
@@ -351,7 +385,17 @@ const Dashboard = ({ datasetName }) => {
       <section className="dashboard-section chart-panel">
         <h3 className="section-title">Chart View</h3>
         <div className="chart-container">
-          <Chart data={filteredData} selectedStreams={selectedStreams} />
+          {!selectedStreams.length ? (
+            <div className="empty-state">Select at least one stream to display the chart.</div>
+          ) : invalidRange || !filteredData.length ? (
+            <div className="empty-state">No chart data is available for the current selection.</div>
+          ) : (
+            <Chart
+              data={filteredData}
+              selectedStreams={selectedStreams}
+              unitHints={dataset.unitHints}
+            />
+          )}
         </div>
       </section>
     </div>

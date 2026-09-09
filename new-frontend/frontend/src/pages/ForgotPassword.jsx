@@ -34,7 +34,7 @@ const ForgotPassword = () => {
       } else {
         setMessage(data.error || "Unable to send reset link.");
       }
-    } catch (error) {
+    } catch {
       setMessage("Backend connection failed. Please try again later.");
     }
   };

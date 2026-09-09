@@ -3,34 +3,24 @@ import "./HomePage.css";
 
 const datasets = [
   {
-    id: "sensor1",
-    name: "Environmental Sensor",
+    id: "12397",
+    name: "ThingSpeak Channel 12397",
     icon: "🌡️",
     description:
       "Collects temperature and humidity data over time, enabling analysis of environmental trends and conditions.",
-    streams: 3,
-    lastUpdated: "Today",
-    status: "Available",
+    streams: "Live",
+    lastUpdated: "Live API",
+    status: "Live",
   },
   {
-    id: "sensor2",
-    name: "Multi-Stream Sensor",
+    id: "1350261",
+    name: "ThingSpeak Channel 1350261",
     icon: "📊",
     description:
       "Captures multiple sensor streams simultaneously, supporting comparison and correlation between different variables.",
-    streams: 4,
-    lastUpdated: "Today",
-    status: "Available",
-  },
-  {
-    id: "sensor3",
-    name: "IoT Monitoring Sensor",
-    icon: "📡",
-    description:
-      "Provides real-time IoT sensor data used for dashboard testing, system validation, and visualisation of streaming data.",
-    streams: 3,
-    lastUpdated: "Today",
-    status: "Available",
+    streams: "Live",
+    lastUpdated: "Live API",
+    status: "Live",
   },
 ];
 
@@ -90,7 +80,7 @@ const HomePage = () => {
 
             <div className="homepage__stats-grid">
               <div className="homepage__stat-card">
-                <strong>3</strong>
+                <strong>2</strong>
                 <span>Datasets</span>
               </div>
               <div className="homepage__stat-card">

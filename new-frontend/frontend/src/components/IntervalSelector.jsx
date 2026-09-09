@@ -1,6 +1,6 @@
 // components/IntervalSelector.jsx
 import React from "react";
-import "./IntervalSelector.css";
+import "./intervalSelector.css";
 
 /**
  * IntervalSelector (Chip Dropdown + SVG Icon + Tooltip)

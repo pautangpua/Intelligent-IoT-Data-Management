@@ -1,10 +1,9 @@
 import React from 'react';
-import SensorData1 from '../data/sensorData1.json'; 
 import './FetchData.css';
 import { useSensorData } from '../hooks/useSensorData';
 
 const FetchData = () => {
-  const { data, loading, error } = useSensorData(true); // toggle to false for API
+  const { data, loading, error } = useSensorData('thingspeak-live');
 
   if (loading) return <p>Loading...</p>;
   if (error) return <p>Error loading data</p>;

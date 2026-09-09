@@ -10,15 +10,6 @@ import {
   ResponsiveContainer
 } from 'recharts';
 
-const multiStreamData = [
-  { timestamp: '2025-07-01', stream1: 24, stream2: 35, stream3: 45 },
-  { timestamp: '2025-07-02', stream1: 28, stream2: 30, stream3: 40 },
-  { timestamp: '2025-07-03', stream1: 32, stream2: 33, stream3: 42 },
-  { timestamp: '2025-07-04', stream1: 31, stream2: 36, stream3: 39 }
-];
-
-
-
 const LineChartComponent = ({ data }) => {
   return (
     <div style={{ width: '100%', height: 350 }}>

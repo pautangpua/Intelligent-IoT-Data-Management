@@ -1,87 +1,34 @@
-import React, { useRef, useState } from "react";
+import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./Login.css";
+import { loginUser, saveAuthSession } from "../services/authClient";
 
 function Login() {
   const navigate = useNavigate();
 
-  const [step, setStep] = useState(1);
-  const [email, setEmail] = useState("");
+  const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const [showPassword, setShowPassword] = useState(false);
-  const [otp, setOtp] = useState(["", "", "", "", "", ""]);
+  const [remember, setRemember] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [message, setMessage] = useState("");
   const [messageType, setMessageType] = useState("");
 
-  const inputRefs = useRef([]);
-
-  const handleLoginSubmit = (e) => {
+  const handleLoginSubmit = async (e) => {
     e.preventDefault();
-
-    const savedUser = JSON.parse(localStorage.getItem("registeredUser"));
-
-    if (!savedUser) {
-      setMessage("No registered account found. Please sign up first.");
-      setMessageType("error");
-      return;
-    }
-
-    if (savedUser.email !== email || savedUser.password !== password) {
-      setMessage("Invalid email or password.");
-      setMessageType("error");
-      return;
-    }
-
+    setSubmitting(true);
     setMessage("");
-    setStep(2);
-  };
-
-  const handleOtpChange = (value, index) => {
-    if (!/^\d?$/.test(value)) return;
-
-    const updatedOtp = [...otp];
-    updatedOtp[index] = value;
-    setOtp(updatedOtp);
-
-    if (value && index < 5) {
-      inputRefs.current[index + 1]?.focus();
-    }
-  };
-
-  const handleKeyDown = (e, index) => {
-    if (e.key === "Backspace" && !otp[index] && index > 0) {
-      inputRefs.current[index - 1]?.focus();
-    }
-  };
-
-  const handleVerifyCode = (e) => {
-    e.preventDefault();
-
-    const enteredCode = otp.join("");
-
-    if (enteredCode.length !== 6) {
-      setMessage("Please enter the 6-digit verification code.");
+    try {
+      const result = await loginUser({ username, password });
+      saveAuthSession({ token: result.accessToken, refreshToken: result.refreshToken, user: result.user, remember });
+      navigate("/home");
+    } catch (error) {
+      setMessage(error.response?.data?.message || "Unable to sign in. Check your username and password.");
       setMessageType("error");
-      return;
+    } finally {
+      setSubmitting(false);
     }
-
-    localStorage.setItem("isAuthenticated", "true");
-    sessionStorage.setItem("iot_auth", "true");
-
-    setMessage("");
-    navigate("/home");
-  };
-
-  const handleResendCode = () => {
-    setMessage("A new verification code has been sent.");
-    setMessageType("success");
-  };
-
-  const handleBackToLogin = () => {
-    setStep(1);
-    setOtp(["", "", "", "", "", ""]);
-    setMessage("");
   };
 
   return (
@@ -91,7 +38,6 @@ function Login() {
           <span>IoT</span>
         </div>
 
-        {step === 1 ? (
           <>
             <h1>Welcome Back</h1>
 
@@ -111,12 +57,12 @@ function Login() {
 
             <form className="login-form" onSubmit={handleLoginSubmit}>
               <div className="form-group">
-                <label>Email Address</label>
+                <label>Username</label>
                 <input
-                  type="email"
-                  placeholder="Enter your email address"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
+                  type="text"
+                  placeholder="Enter your username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
                   required
                 />
               </div>
@@ -145,7 +91,7 @@ function Login() {
 
               <div className="login-options">
                 <label className="remember-me">
-                  <input type="checkbox" />
+                  <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} />
                   Remember me
                 </label>
 
@@ -154,73 +100,16 @@ function Login() {
                 </Link>
               </div>
 
-              <button type="submit" className="login-button">
-                Login
+              <button type="submit" className="login-button" disabled={submitting}>
+                {submitting ? "Signing in…" : "Login"}
               </button>
             </form>
 
             <p className="signup-text">
               Don&apos;t have an account? <Link to="/register">Sign up</Link>
             </p>
+            <p className="login-subtitle">MFA will be enabled after the AFI-14/AFI-16 backend contract is approved.</p>
           </>
-        ) : (
-          <>
-            <h1>Two-Factor Authentication</h1>
-
-            <p className="login-subtitle">
-              Enter the 6-digit verification code sent to your email address.
-            </p>
-
-            {message && (
-              <p
-                className={`form-alert ${
-                  messageType === "success" ? "success-alert" : "error-alert"
-                }`}
-              >
-                {message}
-              </p>
-            )}
-
-            <form className="login-form" onSubmit={handleVerifyCode}>
-              <div className="otp-container">
-                {otp.map((digit, index) => (
-                  <input
-                    key={index}
-                    type="text"
-                    maxLength="1"
-                    className="otp-input"
-                    value={digit}
-                    onChange={(e) => handleOtpChange(e.target.value, index)}
-                    onKeyDown={(e) => handleKeyDown(e, index)}
-                    ref={(el) => (inputRefs.current[index] = el)}
-                  />
-                ))}
-              </div>
-
-              <button type="submit" className="login-button">
-                Verify Code
-              </button>
-            </form>
-
-            <div className="twofactor-actions">
-              <button
-                type="button"
-                className="text-button"
-                onClick={handleResendCode}
-              >
-                Resend Code
-              </button>
-
-              <button
-                type="button"
-                className="text-button"
-                onClick={handleBackToLogin}
-              >
-                Back to Login
-              </button>
-            </div>
-          </>
-        )}
       </section>
     </main>
   );

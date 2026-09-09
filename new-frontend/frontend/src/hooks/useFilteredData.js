@@ -55,7 +55,7 @@ export const useFilteredData = (data, { startTime, endTime, minEntryId, maxEntry
       };
 
       selectedStreams.forEach((stream) => {
-        if (entry.hasOwnProperty(stream)) {
+        if (Object.prototype.hasOwnProperty.call(entry, stream)) {
           filteredEntry[stream] = parseFloat(entry[stream]);
         }
       });

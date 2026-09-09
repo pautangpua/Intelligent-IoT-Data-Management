@@ -5,8 +5,8 @@ const Footer = () => {
     <footer className="footer">
       <div className="footer__container">
         <div className="footer__left">
-          <span>About</span>
-          <span>Contact</span>
+          <a href="/home#platform-info">About</a>
+          <a href="mailto:iot-platform@example.com">Contact</a>
         </div>
 
         <div className="footer__right">

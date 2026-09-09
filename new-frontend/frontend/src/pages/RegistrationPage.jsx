@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import "./RegistrationPage.css";
+import { registerUser } from "../services/authClient";
 
 const RegistrationPage = () => {
   const navigate = useNavigate();
@@ -13,6 +14,7 @@ const RegistrationPage = () => {
   });
 
   const [error, setError] = useState("");
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -23,7 +25,7 @@ const RegistrationPage = () => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (
@@ -41,17 +43,15 @@ const RegistrationPage = () => {
       return;
     }
 
-    localStorage.setItem(
-      "registeredUser",
-      JSON.stringify({
-        fullName: formData.fullName,
-        email: formData.email,
-        password: formData.password,
-      })
-    );
-
-    setError("");
-    navigate("/");
+    setSubmitting(true);
+    try {
+      await registerUser({ username: formData.email, password: formData.password });
+      navigate("/", { state: { message: "Account created. You can now sign in." } });
+    } catch (requestError) {
+      setError(requestError.response?.data?.message || "Registration failed. This username may already exist.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -104,8 +104,8 @@ const RegistrationPage = () => {
 
           {error && <p className="auth-error">{error}</p>}
 
-          <button type="submit" className="auth-primary-btn">
-            Sign Up
+          <button type="submit" className="auth-primary-btn" disabled={submitting}>
+            {submitting ? "Creating account…" : "Sign Up"}
           </button>
         </form>
 
@@ -115,10 +115,10 @@ const RegistrationPage = () => {
           <span></span>
         </div>
 
-        <div className="auth-social-grid">
-          <button type="button">Google</button>
-          <button type="button">Microsoft</button>
-          <button type="button">Apple</button>
+        <div className="auth-social-grid" title="Social authentication is awaiting AFI-14/AFI-16 approval">
+          <button type="button" disabled>Google</button>
+          <button type="button" disabled>Microsoft</button>
+          <button type="button" disabled>Apple</button>
         </div>
 
         <p className="auth-footer-text">

@@ -269,7 +269,16 @@
   border: 1px solid #dbe7f5;
   border-radius: 18px;
   padding: 1rem;
+  min-width: 0;
+  overflow: hidden;
 }
+
+.dashboard-state { max-width: 760px; margin: 2rem auto; padding: 1.25rem; border: 1px solid #bfdbfe; border-radius: 18px; background: #eff6ff; display: flex; flex-direction: column; gap: .65rem; color: #334155; }
+.dashboard-state button { align-self: flex-start; border: 0; border-radius: 10px; padding: .65rem 1rem; background: #2563eb; color: white; font-weight: 700; cursor: pointer; }
+.error-state { border-color: #fecaca; background: #fff1f2; color: #9f1239; }
+.live-dataset-heading { display: flex; justify-content: space-between; gap: 1rem; align-items: center; margin-bottom: 1rem; color: #64748b; }
+.live-dataset-heading h2 { display: inline; margin: 0 0 0 .6rem; color: #0f172a; font-size: 1.15rem; }
+.live-badge { padding: .25rem .5rem; border-radius: 999px; background: #dcfce7; color: #166534; font-size: .75rem; font-weight: 900; }
 
 .pair-stream-block,
 .multi-stream-block {
@@ -297,6 +306,7 @@
 }
 
 @media (max-width: 640px) {
+  .live-dataset-heading { align-items: flex-start; flex-direction: column; }
   .dashboard-section {
     padding: 1rem;
     border-radius: 20px;
