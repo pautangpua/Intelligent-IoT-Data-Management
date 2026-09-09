@@ -18,6 +18,7 @@ import { getLiveDataset } from '../config/datasets.js';
 const Dashboard = ({ datasetId }) => {
   const dataset = getLiveDataset(datasetId);
   const { data, loading, error, refetch } = useSensorData(dataset?.datasetName);
+
   const streamNames = useStreamNames(data);
   const { timeOptions } = useTimeRange(data);
 

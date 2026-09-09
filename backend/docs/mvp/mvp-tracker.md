@@ -107,3 +107,4 @@ The backend live-data path is working in the configured team environment. ThingS
 Frontend verification on 2026-08-09: `npm run build` passed and `npm run lint` passed. Browser proof remains dependent on access to the shared live backend.
 
 Local API testing returned HTTP 500 because the PostgreSQL password was rejected and `THINGSPEAK_CHANNEL_ID` was missing. This is a local environment issue; the shared backend live-data test passed.
+

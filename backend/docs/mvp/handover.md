@@ -111,8 +111,10 @@ Future integration work should connect the dashboard's selected dataset to the d
 
 Any replacement of frontend-side filtering, statistics or correlation logic should be handled as separate implementation work and tested against the expected frontend response structure.
 
+
+
 AFIR-02 does not make those implementation changes.
-### B-05 frontend cutover findings - 2026-08-04
+
 ### B-05 update – Dashboard live-data cutover
 
 Status: Frontend implemented and locally verified
@@ -126,3 +128,5 @@ Remaining verification/blockers:
 - BDAI-10 remains the owner of backend statistics, correlation and anomaly routes.
 - BDAI-11 remains the owner of live alerts and alert-history routes.
 - AFI-14/AFI-16 must approve password-reset and MFA endpoints before those actions can be enabled.
+
+Exit evidence: Every sensor route must use an approved identifier, display distinct live data and remove supported mock dependencies.
