@@ -316,3 +316,30 @@ Recommended response:
 The recommended response format provides a consistent structure for successful and failed requests. Returning a standard JSON object containing success, data, message and error fields allows frontend components to process responses uniformly without implementing route-specific parsing logic.
 
 These standards are proposed for future implementation and do not modify the current backend behaviour observed during the AFIR-02 audit.
+
+
+---
+
+## ISO 8601 UTC Timestamp Contract
+
+All time-series timestamps accepted during ingestion must use ISO 8601 format
+with either `Z` or an explicit timezone offset.
+
+Accepted examples:
+
+- `2026-09-10T10:30:00Z`
+- `2026-09-10T20:30:00+10:00`
+
+Rejected examples:
+
+- `2026-09-10T10:30:00`
+- `10 September 2026`
+- `invalid-timestamp`
+- Missing timestamp values
+
+Valid timestamps are normalised before repository insertion. Equivalent
+timestamps containing different offsets are stored as the same UTC instant.
+
+Dataset series API responses return timestamps in ISO 8601 UTC format:
+
+`YYYY-MM-DDTHH:mm:ss.sssZ`
